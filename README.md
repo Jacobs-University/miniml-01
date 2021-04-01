@@ -1,7 +1,8 @@
 # Practical Assignment 1
 **Dealine**: 01.04.2021
 
-**Name:Bonaventure F. P. Dossou**
+## Name: Bonaventure F. P. Dossou
+
 ## Foreword
 ### Implementation of a Minimal Classification System
 
