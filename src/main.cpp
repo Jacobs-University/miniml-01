@@ -33,7 +33,9 @@ int main(int argc, char *argv[])
 	for (int y = 0; y < imgSize.height; y++) {
 		for (int x = 0; x < imgSize.width; x++) {
 			// --- PUT YOUR CODE HERE ---
-
+            featureVector.row(0) = train_fv.at<Vec3b>(y, x)[0];
+            featureVector.row(1) = train_fv.at<Vec3b>(y, x)[1];
+            featureVector.row(2) = train_fv.at<Vec3b>(y, x)[2];
 
 
 			if (x == 0 && y == 0)
@@ -46,13 +48,17 @@ int main(int argc, char *argv[])
 	Timer::stop();
 
 	classifier->printPriorProbabilities();
+    //    17.2%    0.4%    59.5%    9.9%    13.0%    0.0%
+    //    Car class is not represented in training image because 0.0% probability
 
 	// ========================= Testing =========================
 	Timer::start("Testing... ");
 	for (int y = 0; y < imgSize.height; y++) {
 		for (int x = 0; x < imgSize.width; x++) {
 			// --- PUT YOUR CODE HERE ---
-
+            featureVector.row(0) = train_fv.at<Vec3b>(y, x)[0];
+            featureVector.row(1) = train_fv.at<Vec3b>(y, x)[1];
+            featureVector.row(2) = train_fv.at<Vec3b>(y, x)[2];
 
 
 			// get potentials

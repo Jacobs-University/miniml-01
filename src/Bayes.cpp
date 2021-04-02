@@ -14,13 +14,13 @@ CBayes::CBayes(byte nStates, word nFeatures)
 void CBayes::addFeatureVec(const Mat & featureVector, byte gt)
 {
 	// --- PUT YOUR CODE HERE ---
-
-
-
+    
 	for (word f = 0; f < m_nFeatures; f++) {
 		byte feature = featureVector.at<byte>(f, 0);
 		m_vPDF[f * m_nStates + gt]->addPoint(feature);
 	}
+    
+    m_pPrior->addPoint(gt);
 }
 
 Mat CBayes::getPotentials(const Mat & featureVector) const
