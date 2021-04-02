@@ -30,11 +30,11 @@ Mat CBayes::getPotentials(const Mat & featureVector) const
 	for (byte s = 0; s < m_nStates; s++)
 		res.at<float>(s, 0) = static_cast<float>(m_pPrior->getDensity(s));
 	
-	// --- PUT YOUR CODE HERE ---
+    for (byte s = 0; s < m_nStates; s++)
+        for (word f = 0; f < m_nFeatures; f++)
+            res.at<float>(s, 0) = m_vPDF[f * m_nStates + s]->isEstimated() ? res.at<float>(s, 0) * m_vPDF[f * m_nStates + s]->getDensity(f): 0;
 
-
-	
-	return res;
+    return res;
 }
 
 void CBayes::printPriorProbabilities(void) {

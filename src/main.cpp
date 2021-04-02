@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 				std::cout << featureVector << std::endl;
 
 			byte gt = train_gt.at<byte>(y, x);
+            
 			classifier->addFeatureVec(featureVector, gt);
 		} // x
 	} // y
@@ -56,9 +57,9 @@ int main(int argc, char *argv[])
 	for (int y = 0; y < imgSize.height; y++) {
 		for (int x = 0; x < imgSize.width; x++) {
 			// --- PUT YOUR CODE HERE ---
-            featureVector.row(0) = train_fv.at<Vec3b>(y, x)[0];
-            featureVector.row(1) = train_fv.at<Vec3b>(y, x)[1];
-            featureVector.row(2) = train_fv.at<Vec3b>(y, x)[2];
+            featureVector.row(0) = test_fv.at<Vec3b>(y, x)[0];
+            featureVector.row(1) = test_fv.at<Vec3b>(y, x)[1];
+            featureVector.row(2) = test_fv.at<Vec3b>(y, x)[2];
 
 
 			// get potentials
@@ -67,21 +68,44 @@ int main(int argc, char *argv[])
 			// find the largest potential
 			byte classLabel = 0;
 			// --- PUT YOUR CODE HERE ---
-			
-
-
+            double minVal;
+            double maxVal;
+            Point minLoc;
+            Point maxLoc;
+            minMaxLoc( potentials, &minVal, &maxVal, &minLoc, &maxLoc );
+            float maxV = 0.0;
+            byte maxL = 0;
+            for (byte i = 0; i < potentials.rows; i++) {
+//                std::cout << potentials.at<float>(i) << " ";
+                if (potentials.at<float>(i) > maxV) {
+                    maxV = potentials.at<float>(i);
+                    maxL = i;
+//                    std::cout << "MaxV:" << maxV <<  "maxL:" << " " << maxL << "i: " << i;
+                }
+            }
+            
+//            std::cout << "rows:" << maxLoc.x <<  "cols:" << " ", maxLoc.y;
+            classLabel = maxL;
+//            std::cout << classLabel << " ";
 			solution.at<byte>(y, x) = classLabel;
 		}
+//        cout << "\n";
 	}
 	Timer::stop();
 
 	// ====================== Evaluation =======================	
 	Timer::start("Evaluation... ");
 	double accuracy = 0;
-	for (int y = 0; y < imgSize.height; y++)
-		for (int x = 0; x < imgSize.width; x++)
-			if (solution.at<byte>(y, x) == test_gt.at<byte>(y, x))
-				accuracy++;
+    for (int y = 0; y < imgSize.height; y++) {
+        for (int x = 0; x < imgSize.width; x++){
+            if (solution.at<byte>(y, x) == test_gt.at<byte>(y, x)) {
+//                printf("%hu ", test_gt.at<byte>(y, x));
+//                printf("%hu ", solution.at<byte>(y, x));
+                accuracy++;
+            }
+        }
+//        std::cout << "\n";
+    }
 	accuracy /= (imgSize.height * imgSize.width);
 	Timer::stop();
 	printf("Accuracy = %.2f%%\n", accuracy * 100);
