@@ -7,6 +7,10 @@ int main(int argc, char *argv[])
 {
 #ifdef WIN32
 	const std::string dataPath = "../data/";
+#elif defined(__APPLE__) 
+	const std::string dataPath = "../data/"; 
+	// not really OS-specific, but we used the build directory right inside the repo root + console cmake,
+	// then ran inside the build/ dir, not the build/bin/ dir
 #else
 	const std::string dataPath = "../../../data/";
 #endif
@@ -18,11 +22,21 @@ int main(int argc, char *argv[])
 	const word	nFeatures	= 3;		
 
 	// Reading the images
-	Mat train_fv	= imread(dataPath + "001_fv.jpg", 1);	resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
-	Mat train_gt	= imread(dataPath + "001_gt.bmp", 0);	resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	// groundtruth for training
-	Mat test_fv		= imread(dataPath + "002_fv.jpg", 1);	resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
-	Mat test_gt		= imread(dataPath + "002_gt.bmp", 0);	resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);	// groundtruth for evaluation
-	Mat test_img	= imread(dataPath + "002_img.jpg", 1);	resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
+	Mat train_fv	= imread(dataPath + "001_fv.jpg", 1);	
+	resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+
+	Mat train_gt	= imread(dataPath + "001_gt.bmp", 0);	
+	resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	// groundtruth for training
+
+	Mat test_fv		= imread(dataPath + "002_fv.jpg", 1);	
+	resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+
+	Mat test_gt		= imread(dataPath + "002_gt.bmp", 0);	
+	resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);	// groundtruth for evaluation
+
+	Mat test_img	= imread(dataPath + "002_img.jpg", 1);	
+	resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
+
 	Mat	featureVector(nFeatures, 1, CV_8UC1);
 	Mat	solution(imgSize, CV_8UC1);
 
@@ -33,8 +47,7 @@ int main(int argc, char *argv[])
 	for (int y = 0; y < imgSize.height; y++) {
 		for (int x = 0; x < imgSize.width; x++) {
 			// --- PUT YOUR CODE HERE ---
-
-
+			auto featureVector = Mat(train_fv.at<Vec3b>(y, x));
 
 			if (x == 0 && y == 0)
 				std::cout << featureVector << std::endl;
@@ -52,8 +65,7 @@ int main(int argc, char *argv[])
 	for (int y = 0; y < imgSize.height; y++) {
 		for (int x = 0; x < imgSize.width; x++) {
 			// --- PUT YOUR CODE HERE ---
-
-
+			auto featureVector = Mat(test_fv.at<Vec3b>(y, x));
 
 			// get potentials
 			Mat potentials = classifier->getPotentials(featureVector);
@@ -61,7 +73,8 @@ int main(int argc, char *argv[])
 			// find the largest potential
 			byte classLabel = 0;
 			// --- PUT YOUR CODE HERE ---
-			
+			auto pot = std::vector<double>(potentials);
+			classLabel = std::distance(pot.begin(), std::max_element(pot.begin(), pot.end()));
 
 
 			solution.at<byte>(y, x) = classLabel;
@@ -87,6 +100,7 @@ int main(int argc, char *argv[])
 	imshow("Test image", test_img);
 	imshow("groundtruth", test_gt);
 	imshow("solution", solution);
+	imwrite(dataPath+"../renders/solution.jpg", solution);
 	waitKey();
 
 	return 0;
