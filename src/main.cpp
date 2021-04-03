@@ -73,20 +73,18 @@ int main(int argc, char *argv[])
             Point minLoc;
             Point maxLoc;
             minMaxLoc( potentials, &minVal, &maxVal, &minLoc, &maxLoc );
-            float maxV = 0.0;
-            byte maxL = 0;
-            for (byte i = 0; i < potentials.rows; i++) {
+//            float maxV = 0.0;
+//            float maxL = 0;
+//            for (int i = 0; i < potentials.rows; i++) {
 //                std::cout << potentials.at<float>(i) << " ";
-                if (potentials.at<float>(i) > maxV) {
-                    maxV = potentials.at<float>(i);
-                    maxL = i;
-//                    std::cout << "MaxV:" << maxV <<  "maxL:" << " " << maxL << "i: " << i;
-                }
-            }
+//                if (potentials.at<float>(i) > maxV) {
+//                    maxV = potentials.at<float>(i);
+//                    maxL = i;
+//                }
+//            }
+//            std::cout << "MaxV:" << maxVal <<  "maxL:" << " " << maxLoc.y;
             
-//            std::cout << "rows:" << maxLoc.x <<  "cols:" << " ", maxLoc.y;
-            classLabel = maxL;
-//            std::cout << classLabel << " ";
+            classLabel = (byte)maxLoc.y;
 			solution.at<byte>(y, x) = classLabel;
 		}
 //        cout << "\n";
@@ -99,12 +97,9 @@ int main(int argc, char *argv[])
     for (int y = 0; y < imgSize.height; y++) {
         for (int x = 0; x < imgSize.width; x++){
             if (solution.at<byte>(y, x) == test_gt.at<byte>(y, x)) {
-//                printf("%hu ", test_gt.at<byte>(y, x));
-//                printf("%hu ", solution.at<byte>(y, x));
                 accuracy++;
             }
         }
-//        std::cout << "\n";
     }
 	accuracy /= (imgSize.height * imgSize.width);
 	Timer::stop();
@@ -117,6 +112,10 @@ int main(int argc, char *argv[])
 	imshow("Test image", test_img);
 	imshow("groundtruth", test_gt);
 	imshow("solution", solution);
+        
+    imwrite(dataPath + "renders/test_img.png", test_img);
+    imwrite(dataPath + "renders/test_gt.png", test_gt);
+    imwrite(dataPath + "renders/solution.png", solution);
 	waitKey();
 
 	return 0;
