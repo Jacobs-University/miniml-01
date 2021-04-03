@@ -2,7 +2,7 @@
 **Dealine**: 01.04.2021
 
 Please put your name here:  
-**Name:** .......
+**Name:** Alena Iureva & Oscar Agyei
 ## Foreword
 ### Implementation of a Minimal Classification System
 

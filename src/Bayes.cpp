@@ -14,8 +14,7 @@ CBayes::CBayes(byte nStates, word nFeatures)
 void CBayes::addFeatureVec(const Mat & featureVector, byte gt)
 {
 	// --- PUT YOUR CODE HERE ---
-
-
+	m_pPrior->addPoint(gt);
 
 	for (word f = 0; f < m_nFeatures; f++) {
 		byte feature = featureVector.at<byte>(f, 0);
@@ -31,7 +30,13 @@ Mat CBayes::getPotentials(const Mat & featureVector) const
 		res.at<float>(s, 0) = static_cast<float>(m_pPrior->getDensity(s));
 	
 	// --- PUT YOUR CODE HERE ---
-
+	for (int i = 0; i < m_nFeatures; i++)
+	{
+		for (int j = 0; j < m_nStates; j++)
+		{
+			res.at<float>(j, 0) *= m_vPDF[i * m_nStates + j]->getDensity(featureVector.at<byte>(i, 0));
+		}
+	}
 
 	
 	return res;
