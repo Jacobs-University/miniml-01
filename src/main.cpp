@@ -33,26 +33,33 @@ int main(int argc, char *argv[])
 	for (int y = 0; y < imgSize.height; y++) {
 		for (int x = 0; x < imgSize.width; x++) {
 			// --- PUT YOUR CODE HERE ---
-
+            featureVector.row(0) = train_fv.at<Vec3b>(y, x)[0];
+            featureVector.row(1) = train_fv.at<Vec3b>(y, x)[1];
+            featureVector.row(2) = train_fv.at<Vec3b>(y, x)[2];
 
 
 			if (x == 0 && y == 0)
 				std::cout << featureVector << std::endl;
 
 			byte gt = train_gt.at<byte>(y, x);
+            
 			classifier->addFeatureVec(featureVector, gt);
 		} // x
 	} // y
 	Timer::stop();
 
 	classifier->printPriorProbabilities();
+    //    17.2%    0.4%    59.5%    9.9%    13.0%    0.0%
+    //    Car class is not represented in training image because 0.0% probability
 
 	// ========================= Testing =========================
 	Timer::start("Testing... ");
 	for (int y = 0; y < imgSize.height; y++) {
 		for (int x = 0; x < imgSize.width; x++) {
 			// --- PUT YOUR CODE HERE ---
-
+            featureVector.row(0) = test_fv.at<Vec3b>(y, x)[0];
+            featureVector.row(1) = test_fv.at<Vec3b>(y, x)[1];
+            featureVector.row(2) = test_fv.at<Vec3b>(y, x)[2];
 
 
 			// get potentials
@@ -61,21 +68,39 @@ int main(int argc, char *argv[])
 			// find the largest potential
 			byte classLabel = 0;
 			// --- PUT YOUR CODE HERE ---
-			
-
-
+            double minVal;
+            double maxVal;
+            Point minLoc;
+            Point maxLoc;
+            minMaxLoc( potentials, &minVal, &maxVal, &minLoc, &maxLoc );
+//            float maxV = 0.0;
+//            float maxL = 0;
+//            for (int i = 0; i < potentials.rows; i++) {
+//                std::cout << potentials.at<float>(i) << " ";
+//                if (potentials.at<float>(i) > maxV) {
+//                    maxV = potentials.at<float>(i);
+//                    maxL = i;
+//                }
+//            }
+//            std::cout << "MaxV:" << maxVal <<  "maxL:" << " " << maxLoc.y;
+            
+            classLabel = (byte)maxLoc.y;
 			solution.at<byte>(y, x) = classLabel;
 		}
+//        cout << "\n";
 	}
 	Timer::stop();
 
 	// ====================== Evaluation =======================	
 	Timer::start("Evaluation... ");
 	double accuracy = 0;
-	for (int y = 0; y < imgSize.height; y++)
-		for (int x = 0; x < imgSize.width; x++)
-			if (solution.at<byte>(y, x) == test_gt.at<byte>(y, x))
-				accuracy++;
+    for (int y = 0; y < imgSize.height; y++) {
+        for (int x = 0; x < imgSize.width; x++){
+            if (solution.at<byte>(y, x) == test_gt.at<byte>(y, x)) {
+                accuracy++;
+            }
+        }
+    }
 	accuracy /= (imgSize.height * imgSize.width);
 	Timer::stop();
 	printf("Accuracy = %.2f%%\n", accuracy * 100);
@@ -87,6 +112,10 @@ int main(int argc, char *argv[])
 	imshow("Test image", test_img);
 	imshow("groundtruth", test_gt);
 	imshow("solution", solution);
+        
+    imwrite(dataPath + "renders/test_img.png", test_img);
+    imwrite(dataPath + "renders/test_gt.png", test_gt);
+    imwrite(dataPath + "renders/solution.png", solution);
 	waitKey();
 
 	return 0;
