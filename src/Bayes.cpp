@@ -32,7 +32,7 @@ Mat CBayes::getPotentials(const Mat & featureVector) const
 	
     for (byte s = 0; s < m_nStates; s++)
         for (word f = 0; f < m_nFeatures; f++)
-            res.at<float>(s, 0) = m_vPDF[f * m_nStates + s]->isEstimated() ? res.at<float>(s, 0) * m_vPDF[f * m_nStates + s]->getDensity(f): 0;
+            res.at<float>(s, 0) = m_vPDF[f * m_nStates + s]->isEstimated() ? res.at<float>(s, 0) * m_vPDF[f * m_nStates + s]->getDensity(featureVector.at<byte>(f, 0)): 0;
 
     return res;
 }
